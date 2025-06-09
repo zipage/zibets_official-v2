@@ -1,12 +1,13 @@
+// src/components/Signup.jsx
 import { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore"; // NEW
-import { auth, db } from "../util/firebase";       // NEW
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "../util/firebase";
 import { useNavigate, Link } from "react-router-dom";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState(""); // NEW
+  const [username, setUsername] = useState(""); // Username = Display Name
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -22,7 +23,15 @@ const Signup = () => {
         password
       );
 
-      // Save username to Firestore
+      // ✅ Set displayName on the Firebase Auth user
+      await updateProfile(userCredential.user, {
+        displayName: username,
+      });
+
+      // ✅ Optional: reload to ensure latest info
+      await userCredential.user.reload();
+
+      // ✅ Save to Firestore (already perfect)
       await setDoc(doc(db, "users", userCredential.user.uid), {
         uid: userCredential.user.uid,
         email: email,
