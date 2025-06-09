@@ -23,6 +23,12 @@ function Dashboard({ user }) {
 
   return (
     <SidebarLayout>
+      {user && (
+        <h1 className="text-2xl font-semibold mb-4">
+          Welcome back, {user.displayName || user.email}!
+        </h1>
+      )}
+
       <div className="bg-blue-50 text-blue-900 px-4 py-2 rounded mb-6 font-medium">
         <strong>Paper Betting:</strong> No real money was harmed by the making of these bets.
       </div>
