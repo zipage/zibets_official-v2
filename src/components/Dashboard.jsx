@@ -1,5 +1,6 @@
 // src/components/Dashboard.jsx
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { db } from "../util/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import SidebarLayout from "./SidebarLayout";
@@ -12,6 +13,19 @@ function Dashboard({ user }) {
     zibets: 0,
   });
 
+  const location = useLocation();
+
+  // ✅ Converts American odds to decimal odds
+  const convertOddsToDecimal = (odds) => {
+    const num = parseFloat(odds);
+    if (isNaN(num)) return 1;
+    if (num > 0) {
+      return 1 + num / 100;
+    } else {
+      return 1 + 100 / Math.abs(num);
+    }
+  };
+
   useEffect(() => {
     const fetchBets = async () => {
       const q = query(collection(db, "bets"), where("userId", "==", user.uid));
@@ -22,37 +36,40 @@ function Dashboard({ user }) {
       }));
       setBets(userBets);
 
-      // 💡 CALCULATE STATS
       const totalBets = userBets.length;
-
       let totalStake = 0;
       let totalProfit = 0;
 
       userBets.forEach((bet) => {
         const stake = parseFloat(bet.stake) || 0;
-        const odds = parseFloat(bet.odds) || 0;
-        const outcome = bet.outcome?.toLowerCase(); // win/loss/push
+        const odds = convertOddsToDecimal(bet.odds);
+        const outcome = bet.outcome?.toLowerCase();
 
-        totalStake += stake;
-
-        if (outcome === "win") {
-          totalProfit += (stake * odds) - stake;
-        } else if (outcome === "loss") {
+        if (outcome === "won") {
+          const winnings = (stake * (odds - 1));
+          totalProfit += winnings;
+          totalStake += stake;
+        } else if (outcome === "lost") {
           totalProfit -= stake;
-        } // we skip push for now (neutral result)
+          totalStake += stake;
+        }
+        // Pending or unknown outcomes are skipped
       });
 
       const roi = totalStake > 0 ? ((totalProfit / totalStake) * 100).toFixed(1) : 0;
+      const startingZibets = 50000;
 
       setStats({
         totalBets,
         roi,
-        zibets: totalProfit.toFixed(2),
+        zibets: (startingZibets + parseFloat(totalProfit)).toFixed(2),
       });
     };
 
-    if (user?.uid) fetchBets();
-  }, [user]);
+    if (user?.uid) {
+      fetchBets();
+    }
+  }, [user, location.pathname]);
 
   return (
     <SidebarLayout>
@@ -66,7 +83,6 @@ function Dashboard({ user }) {
         <strong>Paper Betting:</strong> No real money was harmed by the making of these bets.
       </div>
 
-      {/* STATS SECTION */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div className="bg-white shadow rounded p-6 text-center border border-blue-100">
           <div className="text-3xl font-bold text-blue-700">{stats.totalBets}</div>
@@ -84,7 +100,6 @@ function Dashboard({ user }) {
         </div>
       </div>
 
-      {/* RECENT BETS SECTION */}
       <h2 className="text-xl font-semibold text-blue-800 mb-2">Recent Bets</h2>
       <div className="overflow-x-auto bg-white rounded shadow border border-blue-100">
         <table className="min-w-full text-sm text-left">

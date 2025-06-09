@@ -1,6 +1,14 @@
 import { useState, useEffect } from "react";
 import { db, auth } from "../util/firebase";
-import { collection, addDoc, serverTimestamp, query, orderBy, limit, getDocs } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  query,
+  orderBy,
+  limit,
+  getDocs,
+} from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import ZibetsCurrency from "../components/ZibetsCurrency";
 import SidebarLayout from "./SidebarLayout";
@@ -31,7 +39,9 @@ const AddBet = () => {
     const fetchRecentBets = async () => {
       if (!user) return;
       const q = query(
-        collection(db, "users", user.uid, "bets"),
+        collection(db, "bets"),
+        where("userId", "==", user.uid),
+
         orderBy("createdAt", "desc"),
         limit(5)
       );
@@ -62,8 +72,9 @@ const AddBet = () => {
     try {
       console.log("📝 Submitting bet:", formData, "For user:", user.uid);
 
-      await addDoc(collection(db, "users", user.uid, "bets"), {
+      await addDoc(collection(db, "bets"), {
         ...formData,
+        userId: user.uid,
         odds: parseFloat(formData.odds),
         stake: parseFloat(formData.stake),
         createdAt: serverTimestamp(),
@@ -184,7 +195,7 @@ const AddBet = () => {
         <div className="bg-white rounded-lg p-6 shadow-md w-full lg:w-1/3">
           <p className="text-gray-700 text-lg">
             You’re betting <ZibetsCurrency amount={formData.stake || 0} /> to
-            win {" "}
+            win{" "}
             <ZibetsCurrency
               amount={
                 formData.stake && formData.odds
@@ -192,9 +203,8 @@ const AddBet = () => {
                   : 0
               }
             />
-            .
-            <br />
-            You’ll get {" "}
+            .<br />
+            You’ll get{" "}
             <ZibetsCurrency
               amount={
                 formData.stake && formData.odds
