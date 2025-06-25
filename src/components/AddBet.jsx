@@ -1,13 +1,10 @@
+// src/components/AddBet.jsx
 import { useState, useEffect } from "react";
 import { db, auth } from "../util/firebase";
 import {
   collection,
   addDoc,
   serverTimestamp,
-  query,
-  orderBy,
-  limit,
-  getDocs,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import ZibetsCurrency from "../components/ZibetsCurrency";
@@ -24,34 +21,14 @@ const AddBet = () => {
   });
 
   const [user, setUser] = useState(null);
-  const [recentBets, setRecentBets] = useState([]);
+  const [successMsg, setSuccessMsg] = useState("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      console.log("✅ Logged in as:", currentUser?.uid);
     });
-
     return () => unsubscribe();
   }, []);
-
-  useEffect(() => {
-    const fetchRecentBets = async () => {
-      if (!user) return;
-      const q = query(
-        collection(db, "bets"),
-        where("userId", "==", user.uid),
-
-        orderBy("createdAt", "desc"),
-        limit(5)
-      );
-      const snapshot = await getDocs(q);
-      const bets = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setRecentBets(bets);
-    };
-
-    fetchRecentBets();
-  }, [user, formData]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -64,14 +41,11 @@ const AddBet = () => {
     e.preventDefault();
 
     if (!user) {
-      alert("Please log in to save your bet.");
-      console.log("❌ No user found, stopping submission");
+      console.log("❌ User not logged in.");
       return;
     }
 
     try {
-      console.log("📝 Submitting bet:", formData, "For user:", user.uid);
-
       await addDoc(collection(db, "bets"), {
         ...formData,
         userId: user.uid,
@@ -80,8 +54,6 @@ const AddBet = () => {
         createdAt: serverTimestamp(),
       });
 
-      console.log("✅ Bet added to Firestore!");
-      alert("Bet added!");
       setFormData({
         date: "",
         event: "",
@@ -90,24 +62,24 @@ const AddBet = () => {
         stake: "",
         outcome: "Pending",
       });
+
+      setSuccessMsg("✅ Bet saved!");
+      setTimeout(() => setSuccessMsg(""), 3000);
     } catch (err) {
       console.error("🔥 Firestore ERROR:", err);
-      alert("Failed to save bet.");
+      setSuccessMsg("❌ Failed to save bet.");
     }
   };
 
   const calculateWinnings = (odds, stake) => {
-    let payout = 0;
     const numericOdds = parseFloat(odds);
     if (isNaN(numericOdds) || isNaN(stake)) return 0;
 
     if (numericOdds > 0) {
-      payout = (numericOdds / 100) * stake;
+      return ((numericOdds / 100) * stake).toFixed(2);
     } else {
-      payout = (100 / Math.abs(numericOdds)) * stake;
+      return ((100 / Math.abs(numericOdds)) * stake).toFixed(2);
     }
-
-    return payout.toFixed(2);
   };
 
   const calculateTotalReturn = (odds, stake) => {
@@ -194,8 +166,7 @@ const AddBet = () => {
 
         <div className="bg-white rounded-lg p-6 shadow-md w-full lg:w-1/3">
           <p className="text-gray-700 text-lg">
-            You’re betting <ZibetsCurrency amount={formData.stake || 0} /> to
-            win{" "}
+            You’re betting <ZibetsCurrency amount={formData.stake || 0} /> to win{" "}
             <ZibetsCurrency
               amount={
                 formData.stake && formData.odds
@@ -203,7 +174,8 @@ const AddBet = () => {
                   : 0
               }
             />
-            .<br />
+            .
+            <br />
             You’ll get{" "}
             <ZibetsCurrency
               amount={
@@ -217,6 +189,18 @@ const AddBet = () => {
         </div>
       </div>
 
+      {/* ✅ Success message shown here instead of Recent Bets table */}
+      <div className="mt-10">
+        <h2 className="text-xl font-semibold mb-4">Status</h2>
+        {successMsg && (
+          <div className="bg-green-100 text-green-800 border border-green-300 rounded px-4 py-3 shadow">
+            {successMsg}
+          </div>
+        )}
+      </div>
+
+      {/* ⛔ Commenting out the Recent Bets table for now */}
+      {/*
       <div className="mt-10">
         <h2 className="text-xl font-semibold mb-4">Recent Bets</h2>
         <div className="overflow-x-auto">
@@ -231,26 +215,16 @@ const AddBet = () => {
               </tr>
             </thead>
             <tbody>
-              {recentBets.map((bet) => (
-                <tr key={bet.id} className="border-t">
-                  <td className="px-4 py-2 text-sm">{bet.date}</td>
-                  <td className="px-4 py-2 text-sm">{bet.event}</td>
-                  <td className="px-4 py-2 text-sm">{bet.odds}</td>
-                  <td className="px-4 py-2 text-sm">Z{bet.stake}</td>
-                  <td className="px-4 py-2 text-sm">{bet.outcome}</td>
-                </tr>
-              ))}
-              {recentBets.length === 0 && (
-                <tr>
-                  <td colSpan="5" className="px-4 py-4 text-center text-gray-500">
-                    No recent bets found.
-                  </td>
-                </tr>
-              )}
+              <tr>
+                <td colSpan="5" className="px-4 py-4 text-center text-gray-500">
+                  Recent bets currently hidden.
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
+      */}
     </SidebarLayout>
   );
 };
