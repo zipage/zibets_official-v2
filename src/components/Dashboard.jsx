@@ -57,7 +57,7 @@ function Dashboard({ user }) {
       });
 
       const roi = totalStake > 0 ? ((totalProfit / totalStake) * 100).toFixed(1) : 0;
-      const startingZibets = 50000;
+      const startingZibets = 5000; // the amount of zibet currency users have -- made change this where they can choose their increments later on
 
       setStats({
         totalBets,

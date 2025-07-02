@@ -15,7 +15,7 @@ function Home() {
       {/* Hero Section */}
       <header className="text-center px-6 py-10">
         <h2 className="text-3xl sm:text-4xl font-bold mb-4">Track your sports bets — without risking a cent.</h2>
-        <p className="text-gray-600 max-w-xl mx-auto mb-6">Zibets is a paper betting + tracker built for casual bettors who love the game, not the gamble.</p>
+        <p className="text-gray-600 max-w-xl mx-auto mb-6">Zibets is a paper betting + tracker built for casual bettors who love the game, not the gamble. We’re starting with NHL bets — with more sports coming soon as the app grows.</p>
         <div className="flex justify-center gap-4">
           <Link to="/signup" className="bg-blue-600 text-white px-6 py-2 font-medium hover:bg-blue-700 transition">Get Started</Link>
           <Link to="/login" className="border border-black px-6 py-2 font-medium hover:bg-gray-100 transition">Log In</Link>
