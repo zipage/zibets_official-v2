@@ -8,7 +8,6 @@ import {
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import ZibetsCurrency from "../components/ZibetsCurrency";
-import SidebarLayout from "./SidebarLayout";
 
 const AddBet = () => {
   const [formData, setFormData] = useState({
@@ -89,7 +88,7 @@ const AddBet = () => {
   };
 
   return (
-    <SidebarLayout>
+    <div>
       <h1 className="text-2xl font-bold mb-6">Add Bet</h1>
 
       <div className="flex flex-col lg:flex-row gap-6">
@@ -174,8 +173,7 @@ const AddBet = () => {
                   : 0
               }
             />
-            .
-            <br />
+            .<br />
             You’ll get{" "}
             <ZibetsCurrency
               amount={
@@ -189,7 +187,6 @@ const AddBet = () => {
         </div>
       </div>
 
-      {/* ✅ Success message shown here instead of Recent Bets table */}
       <div className="mt-10">
         <h2 className="text-xl font-semibold mb-4">Status</h2>
         {successMsg && (
@@ -198,34 +195,7 @@ const AddBet = () => {
           </div>
         )}
       </div>
-
-      {/* ⛔ Commenting out the Recent Bets table for now */}
-      {/*
-      <div className="mt-10">
-        <h2 className="text-xl font-semibold mb-4">Recent Bets</h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white shadow rounded">
-            <thead className="bg-blue-100 text-blue-900">
-              <tr>
-                <th className="px-4 py-2 text-left">Date</th>
-                <th className="px-4 py-2 text-left">Event</th>
-                <th className="px-4 py-2 text-left">Odds</th>
-                <th className="px-4 py-2 text-left">Stake</th>
-                <th className="px-4 py-2 text-left">Outcome</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td colSpan="5" className="px-4 py-4 text-center text-gray-500">
-                  Recent bets currently hidden.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      */}
-    </SidebarLayout>
+    </div>
   );
 };
 

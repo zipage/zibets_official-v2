@@ -1,6 +1,6 @@
 // src/App.jsx
 import { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./util/firebase";
 
@@ -9,6 +9,8 @@ import Login from "./components/Login";
 import Home from "./components/Home";
 import Dashboard from "./components/Dashboard";
 import AddBet from "./components/AddBet";
+import Glossary from "./components/Glossary";
+import SidebarLayout from "./components/SidebarLayout";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -16,7 +18,6 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        // Reload to ensure we get the latest displayName
         await currentUser.reload();
         setUser(auth.currentUser);
       } else {
@@ -29,11 +30,19 @@ function App() {
 
   return (
     <Routes>
+      {/* Public routes */}
       <Route path="/" element={<Home />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/dashboard" element={<Dashboard user={user} />} />
-      <Route path="/add-bet" element={<AddBet user={user} />} />
+
+      {/* Protected routes with sidebar layout */}
+      <Route path="/" element={<SidebarLayout />}>
+        <Route index element={<Navigate to="/dashboard" />} />
+        <Route path="dashboard" element={<Dashboard user={user} />} />
+        <Route path="add-bet" element={<AddBet user={user} />} />
+        <Route path="glossary" element={<Glossary />} />
+        {/* Add MyStats and Logout later if needed */}
+      </Route>
     </Routes>
   );
 }

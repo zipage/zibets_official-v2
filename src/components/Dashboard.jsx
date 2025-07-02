@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { db } from "../util/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import SidebarLayout from "./SidebarLayout";
 
 function Dashboard({ user }) {
   const [bets, setBets] = useState([]);
@@ -15,7 +14,6 @@ function Dashboard({ user }) {
 
   const location = useLocation();
 
-  // ✅ Converts American odds to decimal odds
   const convertOddsToDecimal = (odds) => {
     const num = parseFloat(odds);
     if (isNaN(num)) return 1;
@@ -46,18 +44,17 @@ function Dashboard({ user }) {
         const outcome = bet.outcome?.toLowerCase();
 
         if (outcome === "won") {
-          const winnings = (stake * (odds - 1));
+          const winnings = stake * (odds - 1);
           totalProfit += winnings;
           totalStake += stake;
         } else if (outcome === "lost") {
           totalProfit -= stake;
           totalStake += stake;
         }
-        // Pending or unknown outcomes are skipped
       });
 
       const roi = totalStake > 0 ? ((totalProfit / totalStake) * 100).toFixed(1) : 0;
-      const startingZibets = 5000; // the amount of zibet currency users have -- made change this where they can choose their increments later on
+      const startingZibets = 5000;
 
       setStats({
         totalBets,
@@ -72,7 +69,7 @@ function Dashboard({ user }) {
   }, [user, location.pathname]);
 
   return (
-    <SidebarLayout>
+    <div>
       {user && (
         <h1 className="text-2xl font-semibold mb-4 text-blue-900">
           Welcome back, {user.displayName || user.email}!
@@ -135,7 +132,7 @@ function Dashboard({ user }) {
           </tbody>
         </table>
       </div>
-    </SidebarLayout>
+    </div>
   );
 }
 
