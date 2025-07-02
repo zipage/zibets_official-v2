@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../util/firebase";
+// src/components/Home.jsx
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { auth } from "../util/firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 function Home() {
   const [user, setUser] = useState(null);
@@ -10,6 +11,7 @@ function Home() {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
+
     return () => unsubscribe();
   }, []);
 
@@ -18,18 +20,31 @@ function Home() {
       {/* Top Nav */}
       <nav className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
         <h1 className="text-xl font-bold">Zibets</h1>
-        <div className="space-x-4">
-          <Link to="/login" className="text-sm font-medium hover:underline">Login</Link>
-          <Link to="/signup" className="text-sm font-medium bg-black text-white px-4 py-1.5 border border-black hover:bg-white hover:text-black transition">Sign Up</Link>
+        <div className="space-x-4 text-sm font-medium">
+          {user ? (
+            <>
+              <span className="text-green-700">Welcome, {user.displayName || user.email} ✅</span>
+              <Link to="/dashboard" className="hover:underline">Dashboard</Link>
+              <button
+                onClick={() => signOut(auth)}
+                className="hover:underline text-red-600"
+              >
+                Log Out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="hover:underline">Login</Link>
+              <Link
+                to="/signup"
+                className="bg-black text-white px-4 py-1.5 border border-black hover:bg-white hover:text-black transition"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
         </div>
       </nav>
-
-      {/* ✅ Logged-in message */}
-      {user && (
-        <div className="bg-green-100 text-green-800 border border-green-300 text-center py-3 px-6 text-sm font-medium">
-          You’re logged in as {user.displayName || user.email} ✅
-        </div>
-      )}
 
       {/* Hero Section */}
       <header className="text-center px-6 py-10">
@@ -49,12 +64,10 @@ function Home() {
             <h4 className="text-lg font-semibold mb-2">What is paper betting?</h4>
             <p className="text-gray-600">Place your bets with fake money, get real excitement, and have zero regrets. It’s like sports betting — minus the financial heartbreak.</p>
           </div>
-
           <div>
             <h4 className="text-lg font-semibold mb-2">Can I export my data?</h4>
             <p className="text-gray-600">Absolutely! You can export your betting history anytime to analyze your performance.</p>
           </div>
-
           <div>
             <h4 className="text-lg font-semibold mb-2">Why paper betting instead of real money?</h4>
             <p className="text-gray-600">We believe in the excitement of betting without the financial loss. Your adrenaline stays, but your bank account stays safe.</p>
