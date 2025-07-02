@@ -1,6 +1,18 @@
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../util/firebase";
 import { Link } from "react-router-dom";
 
 function Home() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col justify-between bg-white text-black font-sans overflow-hidden">
       {/* Top Nav */}
@@ -11,6 +23,13 @@ function Home() {
           <Link to="/signup" className="text-sm font-medium bg-black text-white px-4 py-1.5 border border-black hover:bg-white hover:text-black transition">Sign Up</Link>
         </div>
       </nav>
+
+      {/* ✅ Logged-in message */}
+      {user && (
+        <div className="bg-green-100 text-green-800 border border-green-300 text-center py-3 px-6 text-sm font-medium">
+          You’re logged in as {user.displayName || user.email} ✅
+        </div>
+      )}
 
       {/* Hero Section */}
       <header className="text-center px-6 py-10">
@@ -27,20 +46,16 @@ function Home() {
         <h3 className="text-center text-2xl font-bold mb-10">How does it work?</h3>
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           <div>
-            {/* Icon Placeholder — use later */}
-            {/* <div className="w-12 h-12 bg-gray-200 mb-4"></div> */}
             <h4 className="text-lg font-semibold mb-2">What is paper betting?</h4>
             <p className="text-gray-600">Place your bets with fake money, get real excitement, and have zero regrets. It’s like sports betting — minus the financial heartbreak.</p>
           </div>
 
           <div>
-            {/* <div className="w-12 h-12 bg-gray-200 mb-4"></div> */}
             <h4 className="text-lg font-semibold mb-2">Can I export my data?</h4>
             <p className="text-gray-600">Absolutely! You can export your betting history anytime to analyze your performance.</p>
           </div>
 
           <div>
-            {/* <div className="w-12 h-12 bg-gray-200 mb-4"></div> */}
             <h4 className="text-lg font-semibold mb-2">Why paper betting instead of real money?</h4>
             <p className="text-gray-600">We believe in the excitement of betting without the financial loss. Your adrenaline stays, but your bank account stays safe.</p>
           </div>

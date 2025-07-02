@@ -12,6 +12,8 @@ const SidebarLayout = () => {
           <Link to="/track-bets" className="hover:underline hover:text-white">My Stats</Link>
           <Link to="/glossary" className="hover:underline hover:text-white">Glossary</Link>
           <Link to="/logout" className="hover:underline hover:text-white">Log Out</Link>
+          <Link to="/home" className="hover:underline hover:text-white">Home</Link>
+
         </nav>
       </aside>
 
