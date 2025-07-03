@@ -7,13 +7,35 @@ const SidebarLayout = () => {
       <aside className="w-64 bg-[#155EEF] text-white p-4">
         <div className="text-2xl font-bold mb-8">ZIBETS</div>
         <nav className="flex flex-col space-y-4 text-white font-semibold">
-          <Link to="/dashboard" className="hover:underline hover:text-white">Dashboard</Link>
-          <Link to="/add-bet" className="hover:underline hover:text-white">Add Paper Bet</Link>
-          <Link to="/track-bets" className="hover:underline hover:text-white">My Stats</Link>
-          <Link to="/glossary" className="hover:underline hover:text-white">Glossary</Link>
-          <Link to="/logout" className="hover:underline hover:text-white">Log Out</Link>
-          <Link to="/home" className="hover:underline hover:text-white">Home</Link>
+          <Link to="/home" className="hover:underline hover:text-white">
+            🏠 Home
+          </Link>
+          <Link to="/dashboard" className="hover:underline hover:text-white">
+            📊 Dashboard
+          </Link>
+          <Link to="/add-bet" className="hover:underline hover:text-white">
+            ➕ Add Paper Bet
+          </Link>
+          <Link to="/paper-trail" className="hover:underline hover:text-white">
+            📄 Paper Trail
+          </Link>
 
+          {/* 
+          <Link to="/track-bets" className="hover:underline hover:text-white">
+            📈 My Stats
+          </Link> 
+          */}
+
+          <Link to="/glossary" className="hover:underline hover:text-white">
+            📚 Glossary
+          </Link>
+
+          {/* Divider */}
+          <hr className="my-4 border-white/30" />
+
+          <Link to="/logout" className="hover:underline hover:text-white">
+            🔓 Log Out
+          </Link>
         </nav>
       </aside>
 

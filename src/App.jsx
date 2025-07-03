@@ -11,6 +11,7 @@ import Dashboard from "./components/Dashboard";
 import AddBet from "./components/AddBet";
 import Glossary from "./components/Glossary";
 import SidebarLayout from "./components/SidebarLayout";
+import PaperTrail from "./pages/PaperTrail"; // 👈 NEW
 
 function App() {
   const [user, setUser] = useState(null);
@@ -41,7 +42,7 @@ function App() {
         <Route path="dashboard" element={<Dashboard user={user} />} />
         <Route path="add-bet" element={<AddBet user={user} />} />
         <Route path="glossary" element={<Glossary />} />
-        {/* Add MyStats and Logout later if needed */}
+        <Route path="paper-trail" element={<PaperTrail />} /> {/* 👈 NEW */}
       </Route>
     </Routes>
   );
