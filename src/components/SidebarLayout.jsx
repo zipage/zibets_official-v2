@@ -1,3 +1,4 @@
+// src/components/SidebarLayout.jsx
 import { Link, Outlet } from "react-router-dom";
 
 const SidebarLayout = () => {
@@ -19,13 +20,9 @@ const SidebarLayout = () => {
           <Link to="/paper-trail" className="hover:underline hover:text-white">
             📄 Paper Trail
           </Link>
-
-          {/* 
-          <Link to="/track-bets" className="hover:underline hover:text-white">
-            📈 My Stats
-          </Link> 
-          */}
-
+          <Link to="/parlay-calculator" className="hover:underline hover:text-white">
+            🧮 Parlay Calculator
+          </Link>
           <Link to="/glossary" className="hover:underline hover:text-white">
             📚 Glossary
           </Link>

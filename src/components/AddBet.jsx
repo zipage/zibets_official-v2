@@ -6,6 +6,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
+import { Link } from "react-router-dom";
 import ZibetsCurrency from "../components/ZibetsCurrency";
 
 const AddBet = () => {
@@ -72,30 +73,19 @@ const AddBet = () => {
     }
   };
 
-  // ✅ Corrected odds math for all formats
   const calculateWinnings = (odds, stake) => {
-    if (isNaN(stake)) return 0;
+    if (oddsFormat === "Fractional") {
+      const [numerator, denominator] = odds.toString().split("/").map(Number);
+      if (!denominator || isNaN(numerator)) return 0;
+      return ((numerator / denominator) * stake).toFixed(2);
+    }
+
+    const numericOdds = parseFloat(odds);
+    if (isNaN(numericOdds) || isNaN(stake)) return 0;
 
     if (oddsFormat === "Decimal") {
-      const decimal = parseFloat(odds);
-      return isNaN(decimal) ? 0 : ((decimal - 1) * stake).toFixed(2);
+      return ((numericOdds - 1) * stake).toFixed(2);
     }
-
-    if (oddsFormat === "Fractional") {
-      const parts = odds.toString().split("/");
-      if (parts.length === 2) {
-        const numerator = parseFloat(parts[0]);
-        const denominator = parseFloat(parts[1]);
-        if (!isNaN(numerator) && !isNaN(denominator)) {
-          return ((numerator / denominator) * stake).toFixed(2);
-        }
-      }
-      return 0;
-    }
-
-    // American
-    const numericOdds = parseFloat(odds);
-    if (isNaN(numericOdds)) return 0;
 
     if (numericOdds > 0) {
       return ((numericOdds / 100) * stake).toFixed(2);
@@ -106,7 +96,7 @@ const AddBet = () => {
 
   const calculateTotalReturn = (odds, stake) => {
     const winnings = parseFloat(calculateWinnings(odds, stake));
-    const total = parseFloat(stake) + (isNaN(winnings) ? 0 : winnings);
+    const total = parseFloat(stake) + winnings;
     return total.toFixed(2);
   };
 
@@ -171,9 +161,20 @@ const AddBet = () => {
                 required
               />
               {formData.betType === "Parlay" && (
-                <p className="text-sm text-gray-600 mt-1 italic">
-                  💡 For Parlay bets, enter the <span className="font-semibold">combined odds</span> manually. (Multiply all leg odds together using <span className="underline">decimal format</span>.)
-                </p>
+                <div className="text-sm text-gray-600 mt-1 italic space-y-1">
+                  <p>
+                    💡 For Parlay bets, enter the <span className="font-semibold">combined odds</span> manually. (Multiply all leg odds together using <span className="underline">decimal format</span>.)
+                  </p>
+                  <p>
+                    🧮 Need help?{" "}
+                    <Link
+                      to="/parlay-calculator"
+                      className="text-blue-600 underline hover:text-blue-800"
+                    >
+                      Use the Parlay Calculator
+                    </Link>
+                  </p>
+                </div>
               )}
             </div>
 
