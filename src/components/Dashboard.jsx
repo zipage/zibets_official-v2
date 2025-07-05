@@ -2,7 +2,15 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { db } from "../util/firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
+import toast from "react-hot-toast";
 
 function Dashboard({ user }) {
   const [bets, setBets] = useState([]);
@@ -21,6 +29,24 @@ function Dashboard({ user }) {
       return 1 + num / 100;
     } else {
       return 1 + 100 / Math.abs(num);
+    }
+  };
+
+  const handleOutcomeChange = async (betId, newOutcome) => {
+    try {
+      const betRef = doc(db, "bets", betId);
+      await updateDoc(betRef, { outcome: newOutcome });
+
+      setBets((prevBets) =>
+        prevBets.map((bet) =>
+          bet.id === betId ? { ...bet, outcome: newOutcome } : bet
+        )
+      );
+
+      toast.success(`Updated outcome to "${newOutcome}"`);
+    } catch (err) {
+      console.error("❌ Error updating outcome:", err);
+      toast.error("Error updating outcome.");
     }
   };
 
@@ -66,7 +92,13 @@ function Dashboard({ user }) {
     if (user?.uid) {
       fetchBets();
     }
-  }, [user, location.pathname]);
+  }, [user, location.pathname, bets]);
+
+  const sortedBets = [...bets].sort((a, b) => {
+    if (a.outcome === "Pending" && b.outcome !== "Pending") return -1;
+    if (a.outcome !== "Pending" && b.outcome === "Pending") return 1;
+    return 0;
+  });
 
   return (
     <div>
@@ -111,15 +143,29 @@ function Dashboard({ user }) {
             </tr>
           </thead>
           <tbody>
-            {bets.length > 0 ? (
-              bets.map((bet) => (
+            {sortedBets.length > 0 ? (
+              sortedBets.map((bet) => (
                 <tr key={bet.id} className="border-t">
                   <td className="px-4 py-2">{bet.date}</td>
                   <td className="px-4 py-2">{bet.event}</td>
                   <td className="px-4 py-2">{bet.betType}</td>
-                  <td className="px-4 py-2">${bet.stake}</td>
+                  <td className="px-4 py-2">𝓏{bet.stake}</td>
                   <td className="px-4 py-2">{bet.odds}</td>
-                  <td className="px-4 py-2">{bet.outcome || "-"}</td>
+                  <td className="px-4 py-2">
+                    {bet.outcome === "Pending" ? (
+                      <select
+                        value={bet.outcome}
+                        onChange={(e) => handleOutcomeChange(bet.id, e.target.value)}
+                        className="border px-2 py-1 rounded"
+                      >
+                        <option value="Pending">Pending</option>
+                        <option value="Won">Won</option>
+                        <option value="Lost">Lost</option>
+                      </select>
+                    ) : (
+                      bet.outcome
+                    )}
+                  </td>
                 </tr>
               ))
             ) : (
