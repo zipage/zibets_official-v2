@@ -9,29 +9,29 @@ const SidebarLayout = () => {
         <div className="text-2xl font-bold mb-8">ZIBETS</div>
         <nav className="flex flex-col space-y-4 text-white font-semibold">
           <Link to="/home" className="hover:underline hover:text-white">
-            🏠 Home
+             Home
           </Link>
           <Link to="/dashboard" className="hover:underline hover:text-white">
-            📊 Dashboard
+             Dashboard
           </Link>
           <Link to="/add-bet" className="hover:underline hover:text-white">
-            ➕ Add Paper Bet
+             Add Paper Bet
           </Link>
           <Link to="/paper-trail" className="hover:underline hover:text-white">
-            📄 Paper Trail
+             Paper Trail
           </Link>
           <Link to="/parlay-calculator" className="hover:underline hover:text-white">
-            🧮 Parlay Calculator
+             Parlay Calculator
           </Link>
           <Link to="/glossary" className="hover:underline hover:text-white">
-            📚 Glossary
+             Glossary
           </Link>
 
           {/* Divider */}
           <hr className="my-4 border-white/30" />
 
           <Link to="/logout" className="hover:underline hover:text-white">
-            🔓 Log Out
+             Log Out
           </Link>
         </nav>
       </aside>

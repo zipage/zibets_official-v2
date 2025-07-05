@@ -8,6 +8,7 @@ import {
   where,
   getDocs,
   updateDoc,
+  deleteDoc,
   doc,
 } from "firebase/firestore";
 import toast from "react-hot-toast";
@@ -47,6 +48,25 @@ function Dashboard({ user }) {
     } catch (err) {
       console.error("❌ Error updating outcome:", err);
       toast.error("Error updating outcome.");
+    }
+  };
+
+  const handleDeleteBet = async (betId) => {
+    try {
+      await deleteDoc(doc(db, "bets", betId));
+      setBets((prevBets) => prevBets.filter((bet) => bet.id !== betId));
+      toast("🗑️ Bet deleted successfully!", {
+        icon: "✅",
+        style: {
+          borderRadius: "8px",
+          background: "#fefefe",
+          color: "#333",
+          fontWeight: "500",
+        },
+      });
+    } catch (err) {
+      console.error("❌ Error deleting bet:", err);
+      toast.error("Failed to delete bet.");
     }
   };
 
@@ -92,7 +112,7 @@ function Dashboard({ user }) {
     if (user?.uid) {
       fetchBets();
     }
-  }, [user, location.pathname, bets]);
+  }, [user, location.pathname]);
 
   const sortedBets = [...bets].sort((a, b) => {
     if (a.outcome === "Pending" && b.outcome !== "Pending") return -1;
@@ -140,6 +160,7 @@ function Dashboard({ user }) {
               <th className="px-4 py-3">Stake</th>
               <th className="px-4 py-3">Odds</th>
               <th className="px-4 py-3">Outcome</th>
+              <th className="px-4 py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -155,7 +176,9 @@ function Dashboard({ user }) {
                     {bet.outcome === "Pending" ? (
                       <select
                         value={bet.outcome}
-                        onChange={(e) => handleOutcomeChange(bet.id, e.target.value)}
+                        onChange={(e) =>
+                          handleOutcomeChange(bet.id, e.target.value)
+                        }
                         className="border px-2 py-1 rounded"
                       >
                         <option value="Pending">Pending</option>
@@ -166,11 +189,22 @@ function Dashboard({ user }) {
                       bet.outcome
                     )}
                   </td>
+                  <td className="px-4 py-2">
+                    <button
+                      onClick={() => handleDeleteBet(bet.id)}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      🗑️
+                    </button>
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td className="px-4 py-4 text-gray-500 italic" colSpan="6">
+                <td
+                  colSpan="7"
+                  className="px-4 py-4 text-gray-500 italic text-center"
+                >
                   No bets yet. Add your first one!
                 </td>
               </tr>
