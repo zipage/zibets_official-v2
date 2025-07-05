@@ -125,15 +125,24 @@ const AddBet = () => {
               <option>Over/Under</option>
               <option>Parlay</option>
             </select>
-            <input
-              type="text"
-              name="odds"
-              placeholder="Odds (e.g. -110 or 2.5)"
-              value={formData.odds}
-              onChange={handleChange}
-              className="input"
-              required
-            />
+
+            <div className="col-span-2">
+              <input
+                type="text"
+                name="odds"
+                placeholder="Odds (e.g. -110 or 2.5)"
+                value={formData.odds}
+                onChange={handleChange}
+                className="input w-full"
+                required
+              />
+              {formData.betType === "Parlay" && (
+                <p className="text-sm text-gray-600 mt-1 italic">
+                  💡 For Parlay bets, enter the <span className="font-semibold">combined odds</span> manually. (Multiply all leg odds together using <span className="underline">decimal format</span>.)
+                </p>
+              )}
+            </div>
+
             <input
               type="number"
               name="stake"
