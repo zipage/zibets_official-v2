@@ -1,6 +1,7 @@
+// src/components/PaperTrail.jsx
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
-import { auth, db } from "../util/firebase"; // adjust if your path is different
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { auth, db } from "../util/firebase";
 
 const PaperTrail = () => {
   const [bets, setBets] = useState([]);
@@ -14,8 +15,7 @@ const PaperTrail = () => {
       const q = query(
         collection(db, "bets"),
         where("userId", "==", user.uid)
-        );
-
+      );
       const querySnapshot = await getDocs(q);
 
       const betList = querySnapshot.docs.map((doc) => ({
@@ -35,12 +35,13 @@ const PaperTrail = () => {
   }, []);
 
   const downloadCSV = () => {
-    const header = ["Date", "Event", "Type", "Odds", "Stake", "Outcome"];
+    const header = ["Date", "Event", "Type", "Odds", "Format", "Stake", "Outcome"];
     const rows = bets.map((bet) => [
       new Date(bet.date).toLocaleDateString(),
       bet.event,
       bet.betType,
       bet.odds,
+      bet.oddsFormat || "N/A",
       bet.stake,
       bet.outcome,
     ]);
@@ -84,6 +85,7 @@ const PaperTrail = () => {
                 <th className="px-4 py-2 border">Event</th>
                 <th className="px-4 py-2 border">Type</th>
                 <th className="px-4 py-2 border">Odds</th>
+                <th className="px-4 py-2 border">Format</th>
                 <th className="px-4 py-2 border">Stake</th>
                 <th className="px-4 py-2 border">Outcome</th>
               </tr>
@@ -97,6 +99,7 @@ const PaperTrail = () => {
                   <td className="px-4 py-2 border">{bet.event}</td>
                   <td className="px-4 py-2 border">{bet.betType}</td>
                   <td className="px-4 py-2 border">{bet.odds}</td>
+                  <td className="px-4 py-2 border">{bet.oddsFormat || "N/A"}</td>
                   <td className="px-4 py-2 border">{bet.stake}</td>
                   <td className="px-4 py-2 border">{bet.outcome}</td>
                 </tr>
