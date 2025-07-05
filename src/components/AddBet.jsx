@@ -1,4 +1,3 @@
-// src/components/AddBet.jsx
 import { useState, useEffect } from "react";
 import { db, auth } from "../util/firebase";
 import {
@@ -19,6 +18,7 @@ const AddBet = () => {
     outcome: "Pending",
   });
 
+  const [oddsFormat, setOddsFormat] = useState("American");
   const [user, setUser] = useState(null);
   const [successMsg, setSuccessMsg] = useState("");
 
@@ -50,6 +50,7 @@ const AddBet = () => {
         userId: user.uid,
         odds: parseFloat(formData.odds),
         stake: parseFloat(formData.stake),
+        oddsFormat: oddsFormat,
         createdAt: serverTimestamp(),
       });
 
@@ -61,6 +62,7 @@ const AddBet = () => {
         stake: "",
         outcome: "Pending",
       });
+      setOddsFormat("American");
 
       setSuccessMsg("✅ Bet saved!");
       setTimeout(() => setSuccessMsg(""), 3000);
@@ -70,9 +72,30 @@ const AddBet = () => {
     }
   };
 
+  // ✅ Corrected odds math for all formats
   const calculateWinnings = (odds, stake) => {
+    if (isNaN(stake)) return 0;
+
+    if (oddsFormat === "Decimal") {
+      const decimal = parseFloat(odds);
+      return isNaN(decimal) ? 0 : ((decimal - 1) * stake).toFixed(2);
+    }
+
+    if (oddsFormat === "Fractional") {
+      const parts = odds.toString().split("/");
+      if (parts.length === 2) {
+        const numerator = parseFloat(parts[0]);
+        const denominator = parseFloat(parts[1]);
+        if (!isNaN(numerator) && !isNaN(denominator)) {
+          return ((numerator / denominator) * stake).toFixed(2);
+        }
+      }
+      return 0;
+    }
+
+    // American
     const numericOdds = parseFloat(odds);
-    if (isNaN(numericOdds) || isNaN(stake)) return 0;
+    if (isNaN(numericOdds)) return 0;
 
     if (numericOdds > 0) {
       return ((numericOdds / 100) * stake).toFixed(2);
@@ -83,7 +106,7 @@ const AddBet = () => {
 
   const calculateTotalReturn = (odds, stake) => {
     const winnings = parseFloat(calculateWinnings(odds, stake));
-    const total = parseFloat(stake) + winnings;
+    const total = parseFloat(stake) + (isNaN(winnings) ? 0 : winnings);
     return total.toFixed(2);
   };
 
@@ -126,11 +149,22 @@ const AddBet = () => {
               <option>Parlay</option>
             </select>
 
+            <select
+              name="oddsFormat"
+              value={oddsFormat}
+              onChange={(e) => setOddsFormat(e.target.value)}
+              className="input"
+            >
+              <option value="American">🇺🇸 American</option>
+              <option value="Decimal">🇪🇺 Decimal</option>
+              <option value="Fractional">🇬🇧 Fractional</option>
+            </select>
+
             <div className="col-span-2">
               <input
                 type="text"
                 name="odds"
-                placeholder="Odds (e.g. -110 or 2.5)"
+                placeholder="Odds (e.g. -110, 2.5, or 5/2)"
                 value={formData.odds}
                 onChange={handleChange}
                 className="input w-full"
