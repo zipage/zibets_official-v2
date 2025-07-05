@@ -13,9 +13,9 @@ const PaperTrail = () => {
     try {
       const q = query(
         collection(db, "bets"),
-        where("userId", "==", user.uid),
-        orderBy("createdAt", "desc")
-      );
+        where("userId", "==", user.uid)
+        );
+
       const querySnapshot = await getDocs(q);
 
       const betList = querySnapshot.docs.map((doc) => ({
