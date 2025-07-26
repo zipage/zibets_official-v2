@@ -69,19 +69,19 @@ const ParlayCalculator = () => {
           onClick={calculateParlay}
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
         >
-          💰 Calculate Parlay
+          Calculate Parlay
         </button>
 
         {combinedOdds > 0 && (
           <div className="mt-4 space-y-2">
             <p>
-              🎯 Combined Odds: <strong>{combinedOdds}</strong>
+              Combined Odds: <strong>{combinedOdds}</strong>
             </p>
             <p>
-              🤑 Winnings: <ZibetsCurrency amount={winnings} />
+              Winnings: <ZibetsCurrency amount={winnings} />
             </p>
             <p>
-              💵 Total Return: <ZibetsCurrency amount={totalReturn} />
+              Total Return: <ZibetsCurrency amount={totalReturn} />
             </p>
           </div>
         )}
