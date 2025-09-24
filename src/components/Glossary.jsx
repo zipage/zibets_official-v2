@@ -63,7 +63,7 @@ const Glossary = () => {
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6 text-blue-700">Glossary</h1>
       <p className="mb-4 text-gray-700">
-        Here's a quick breakdown of common betting terms you'll see around Zibets:
+        Here's a quick breakdown of common betting terms you'll see around ZiBets:
       </p>
       <ul className="space-y-4">
         {terms.map((item, index) => (

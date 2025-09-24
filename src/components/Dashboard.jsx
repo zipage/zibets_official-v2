@@ -145,7 +145,7 @@ function Dashboard({ user }) {
 
         <div className="bg-white shadow rounded p-6 text-center border border-blue-100">
           <div className="text-3xl font-bold text-blue-600">{stats.zibets}</div>
-          <div className="text-sm text-gray-500 mt-2">Zibets</div>
+          <div className="text-sm text-gray-500 mt-2">ZiBets</div>
         </div>
       </div>
 
